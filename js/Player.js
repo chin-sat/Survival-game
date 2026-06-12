@@ -18,18 +18,27 @@ class Player {
 
     get speed() { return this.baseSpeed * (1 + (UPGRADES.speed.level - 1) * 0.15); }
 
-    update(keys) {
+    update(keys, gameInstance) {
         let moveX = 0, moveY = 0;
-        if (keys['w'] || keys['W']) moveY -= 1;
-        if (keys['s'] || keys['S']) moveY += 1;
-        if (keys['a'] || keys['A']) moveX -= 1;
-        if (keys['d'] || keys['D']) moveX += 1;
+        if (keys['w'] || keys['W'] || keys['ArrowUp']) moveY -= 1;
+        if (keys['s'] || keys['S'] || keys['ArrowDown']) moveY += 1;
+        if (keys['a'] || keys['A'] || keys['ArrowLeft']) moveX -= 1;
+        if (keys['d'] || keys['D'] || keys['ArrowRight']) moveX += 1;
 
+        if (moveX === 0 && moveY === 0 && gameInstance && gameInstance.touchInput) {
+            moveX = gameInstance.touchInput.x; moveY = gameInstance.touchInput.y;
+        }
         if (moveX !== 0 && moveY !== 0) { moveX *= 0.7071; moveY *= 0.7071; }
 
-        this.x = Math.max(this.radius, Math.min(this.canvasWidth - this.radius, this.x + moveX * this.speed));
-        this.y = Math.max(this.radius, Math.min(this.canvasHeight - this.radius, this.y + moveY * this.speed));
+        // Permit player vectors to safely translate infinitely through world space coordinates
+        this.x += moveX * this.speed; this.y += moveY * this.speed;
+        
+        if (moveX !== 0 || moveY !== 0) {
+            const tut = document.getElementById("tutorialOverlay");
+            if (tut) { tut.style.opacity = "0"; setTimeout(() => tut.remove(), 500); }
+        }
     }
+
 
     draw(ctx) {
         ctx.beginPath();
