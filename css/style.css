@@ -78,26 +78,35 @@ canvas {
 }
 
 /* ==========================================================================
-   3. BOTTOM RIGHT CONTROLS AREA
+   BOTTOM RIGHT CONTROLS AREA (STRICT HORIZONTAL BUTTONS FIX)
    ========================================================================== */
-.ctrl-btns {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-    pointer-events: auto;
-    z-index: 12;
-}
-
-/* Semi-transparent controls that clear the upper XP interface */
-.ctrl-btns button {
-    padding: 8px 14px !important;
-    font-size: 13px !important;
-    font-weight: bold !important;
+   .ctrl-btns {
+    position: absolute !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    
+    /* FIX: Explicitly forces buttons to sit side-by-side horizontally */
+    display: flex !important;
+    flex-direction: row !important; 
+    
+    gap: 10px !important;
     width: auto !important;
     height: auto !important;
-    display: inline-block !important;
+    pointer-events: auto !important;
+    z-index: 12 !important;
+}
+
+/* Fixes the button shapes so they don't stretch into tall vertical bars */
+.ctrl-btns button {
+    display: inline-block !important; /* Prevents vertical block stretching */
+    width: 90px !important;           /* Rigid width for uniform button shapes */
+    height: 36px !important;          /* Rigid height */
+    padding: 0 !important;            /* Removes inner padding that cause issues */
+    font-size: 13px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    line-height: 34px !important;     /* Centers text vertically inside the button */
+    
     color: rgba(255, 255, 255, 0.8) !important;
     background-color: rgba(34, 34, 34, 0.6) !important;
     border: 1px solid rgba(68, 68, 68, 0.5) !important;
@@ -113,6 +122,7 @@ canvas {
     color: #fff !important;
     border-color: #ffa500 !important;
 }
+
 
 /* ==========================================================================
    4. MOBILE ON-SCREEN TOUCH JOYSTICK
