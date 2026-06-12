@@ -2,17 +2,22 @@ class Projectile {
     constructor(x, y, tx, ty) {
         this.x = x;
         this.y = y;
-        this.radius = 5;
+        
+        // FIX: Scale projectile attributes dynamically with your new choice pool variables
+        this.radius = 5 * (1 + (UPGRADES.size.level - 1) * 0.25);
         this.speed = 9;
-        this.damage = 15 * (1 + (UPGRADES.damage.level - 1) * 0.4);
-        this.pierce = UPGRADES.pierce.level;
+        
+        // Base payload damage is multiplied safely by your size scaling tiers
+        this.damage = 15 * (1 + (UPGRADES.size.level - 1) * 0.4);
+        
+        this.pierce = 1; 
         this.hitTargets = new Set();
 
         let dx = tx - x;
         let dy = ty - y;
         let dist = Math.hypot(dx, dy);
-        this.vx = (dx / dist) * this.speed;
-        this.vy = (dy / dist) * this.speed;
+        this.vx = dist > 0 ? (dx / dist) * this.speed : this.speed;
+        this.vy = dist > 0 ? (dy / dist) * this.speed : 0;
     }
 
     update() {
