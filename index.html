@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survivor Arena - Modular Edition</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <!-- Real-time HUD -->
+    <div id="uiLayer">
+        <div class="hud-row">
+            <div id="scoreHUD">Time: 0s</div>
+            <div id="levelHUD">Lv. 1</div>
+            <div id="healthHUD" style="color: #ff4757;">HP: 100/100</div>
+        </div>
+        <div id="xpBarContainer">
+            <div id="xpBarFill"></div>
+        </div>
+    </div>
+
+    <!-- Level Up Modal Overlay -->
+    <div id="levelUpScreen" class="overlay">
+        <h1>LEVEL UP!</h1>
+        <div class="subtitle">Select a weapon upgrade system component</div>
+        <div id="upgradeOptions"></div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="overlay">
+        <h1>ARENA DEFEAT</h1>
+        <p id="finalScore" class="subtitle">You survived 0 seconds!</p>
+        <button id="restartBtn">Re-enter Arena</button>
+    </div>
+</div>
+
+<!-- Load Scripts sequentially to resolve inter-class dependencies -->
+<script src="js/Upgrades.js"></script>
+<script src="js/XpGem.js"></script>
+<script src="js/Projectile.js"></script>
+<script src="js/Enemy.js"></script>
+<script src="js/Player.js"></script>
+<script src="js/Game.js"></script>
+
+</body>
+</html>
