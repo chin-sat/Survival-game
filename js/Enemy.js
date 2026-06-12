@@ -5,13 +5,21 @@ class Enemy {
         this.type = type; 
         this.dead = false;
 
-        if (type === 'brute') {
-            this.radius = 24; this.speed = 1.2; this.health = 45; this.damage = 25; this.color = "#ffa500"; this.xpValue = 5;
-        } else if (type === 'boss') {
-            this.radius = 45; this.speed = 0.8; this.health = 400; this.damage = 50; this.color = "#9b59b6"; this.xpValue = 15;
-        } else { 
-            this.radius = 11; this.speed = 2.4; this.health = 15; this.damage = 10; this.color = "#ff4757"; this.xpValue = 1;
-        }
+    // Inside js/Enemy.js constructor / reset block:
+    if (type === 'brute') {
+        this.radius = 24; this.speed = 1.2; this.health = 45; this.damage = 25; this.color = "#ffa500"; this.xpValue = 5;
+    } else if (type === 'boss') {
+        this.radius = 45; this.speed = 0.8; this.health = 400; this.damage = 50; this.color = "#9b59b6"; this.xpValue = 50;
+    } else { 
+        // BUFFED SCOUT STATS FOR AN EXCITING START
+        this.radius = 11; 
+        this.speed = 3.2;    /* Increased speed from 2.4 -> 3.2 */
+        this.health = 35;   /* Increased health from 15 -> 35 */
+        this.damage = 12;   /* Increased damage from 10 -> 12 */
+        this.color = "#ff4757"; 
+        this.xpValue = 1;
+    }
+
     }
 
     update(playerX, playerY) {
@@ -34,4 +42,5 @@ class Enemy {
         ctx.stroke();
         ctx.closePath();
     }
+}
 }
