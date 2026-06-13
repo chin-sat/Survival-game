@@ -21,28 +21,60 @@ class GameBase {
         this.camX = 0; this.camY = 0;
         Object.keys(UPGRADES).forEach(k => UPGRADES[k].level = (k === 'lightning' || k === 'regen') ? 0 : 1);
         this.player = new Player(this.canvas.width/2, this.canvas.height/2, this.canvas.width, this.canvas.height, () => this.lvlUp(), () => this.hud());
-        this.gameOverScreen.style.display = this.levelUpScreen.style.display = "none"; this.gameState = "PLAY"; this.hud();
+        this.gameOverScreen.style.display = this.levelUpScreen.style.display = "none";  // FIX: Start in the menu state instead of auto-playing!
+        this.gameState = "START_MENU"; 
+        this.hud();
     }
     setupInput() {
-        window.addEventListener("keydown", e => { this.keys[e.key] = true; sfx.init(); }); window.addEventListener("keyup", e => this.keys[e.key] = false);
+        window.addEventListener("keydown", e => { 
+            this.keys[e.key] = true; sfx.init(); 
+            // Start game if any key is pressed on the start menu
+            if (this.gameState === "START_MENU") { this.startGameFromMenu(); }
+        }); 
+        window.addEventListener("keyup", e => this.keys[e.key] = false);
         this.restartBtn.addEventListener("click", () => this.init());
+        
+        // Fix: Make clicking the tutorial screen start the game as well
+        const tut = document.getElementById("tutorialOverlay");
+        if (tut) {
+            tut.style.pointerEvents = "auto"; // Allow clicks to register
+            tut.addEventListener("click", () => { sfx.init(); this.startGameFromMenu(); });
+        }
+
         document.getElementById("pauseBtn").addEventListener("click", () => this.togglePause(true));
         document.getElementById("resumeBtn").addEventListener("click", () => this.togglePause(false));
         window.addEventListener("keydown", e => { if (e.key === "Escape" && this.gameState === "PLAY") this.togglePause(true); });
+        
         this.isMuted = localStorage.getItem("arena_muted") === "true"; document.getElementById("muteBtn").innerText = this.isMuted ? "🔇 Muted" : "🔊 Mute";
         document.getElementById("muteBtn").addEventListener("click", () => { this.isMuted = !this.isMuted; localStorage.setItem("arena_muted", this.isMuted); document.getElementById("muteBtn").innerText = this.isMuted ? "🔇 Muted" : "🔊 Mute"; });
+        
         const zone = document.getElementById("touchJoystickZone"); const knob = document.getElementById("joystickKnob"); this.touchInput = { x: 0, y: 0 };
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
             zone.style.display = "block"; let startX = 0, startY = 0;
-            zone.addEventListener("touchstart", e => { sfx.init(); startX = e.touches[0].clientX; startY = e.touches[0].clientY; });
+            zone.addEventListener("touchstart", e => { 
+                sfx.init(); startX = e.touches.clientX; startY = e.touches.clientY; 
+                if (this.gameState === "START_MENU") { this.startGameFromMenu(); }
+            });
             zone.addEventListener("touchmove", e => {
-                let dx = e.touches[0].clientX - startX, dy = e.touches[0].clientY - startY, dist = Math.hypot(dx, dy), max = 35;
+                let dx = e.touches.clientX - startX, dy = e.touches.clientY - startY, dist = Math.hypot(dx, dy), max = 35;
                 if (dist > max) { dx = (dx / dist) * max; dy = (dy / dist) * max; }
                 knob.style.transform = `translate(${dx}px, ${dy}px)`; this.touchInput.x = dx / max; this.touchInput.y = dy / max;
             });
             zone.addEventListener("touchend", () => { knob.style.transform = "translate(0,0)"; this.touchInput.x = this.touchInput.y = 0; });
         }
     }
+
+    startGameFromMenu() {
+        if (this.gameState !== "START_MENU") return;
+        this.gameState = "PLAY";
+        const tut = document.getElementById("tutorialOverlay");
+        if (tut) { 
+            tut.style.opacity = "0"; 
+            setTimeout(() => tut.remove(), 500); 
+        }
+    }
+
+
     togglePause(p) {
         if (p && this.gameState === "PLAY") { this.gameState = "PAUSED"; document.getElementById("pauseScreen").style.display = "flex"; }
         else if (!p && this.gameState === "PAUSED") { this.gameState = "PLAY"; document.getElementById("pauseScreen").style.display = "none"; }
@@ -61,6 +93,8 @@ class GameBase {
             c.onclick = () => { UPGRADES[k].level++; this.levelUpScreen.style.display = "none"; this.gameState = "PLAY"; }; this.upgradeOptionsContainer.appendChild(c);
         });
         this.levelUpScreen.style.display = "flex";
+           // FIX: Forces the browser to calculate the horizontal layout immediately without waiting for a resize!
+           this.hud(); 
     }
 
     end() {
